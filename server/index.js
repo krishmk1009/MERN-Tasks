@@ -1,13 +1,11 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const User = require("./models/user")
 const Task = require("./models/task")
 const app = express()
 const port = 3000
 app.use(express.json());
 
-
-
-const mongoose = require('mongoose')
 
 async function connectToDB() {
     try {
@@ -36,6 +34,7 @@ app.post('/users', async (req, res) => {
     }
 })
 
+  
 app.post('/users/:userId/tasks', async (req, res) => {
     try {
         const { userId } = req.params;
