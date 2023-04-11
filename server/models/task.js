@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const User = require("./user")
+// const User = require("./user")
 
 const taskSchema = mongoose.Schema({
     taskName: {
@@ -7,12 +7,12 @@ const taskSchema = mongoose.Schema({
         required: true,
 
     }
-    ,
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default:"642b35f14c51da2cbc420da4"
-    }
+    // ,
+    // userId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User',
+    //     default:"642b35f14c51da2cbc420da4"
+    // }
     ,
     createdAt: {
         type: Date,

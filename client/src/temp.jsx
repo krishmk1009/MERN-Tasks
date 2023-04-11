@@ -10,22 +10,21 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [inputTask, setInputTask] = useState("");
 
+  const userId = "642b35f14c51da2cbc420da4";
 
+  const addTask = async (taskName) => {
+    try {
+      const response = await axios.post(`users/${userId}/tasks`, { taskName });
+      setTasks([...tasks, response.data]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleClick = () => {
     setShowInput(true);
     setAddBtn(false);
   };
-
-  const addTask = async (taskName) => {
-    try {
-      const response = await axios.post('http://localhost:5173/tasks', { taskName })
-      setTasks([...tasks, response.data]);
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
 
   const handleDoneClick = async () => {
     try {
@@ -41,7 +40,7 @@ function App() {
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const response =  await axios.get("http://localhost:5173/tasks");
+        const response = await axios.get(`/users/${userId}/tasks`);
         setTasks(response.data);
       } catch (err) {
         console.log(err);
@@ -59,8 +58,8 @@ function App() {
 
       <div className="taskList">
         Tasks:
-        {tasks.map((task , index) => {
-          return <h3 key={index}>{task.taskName}</h3>; // use 'taskName' instead of 'title'
+        {tasks.map((task) => {
+          return <h3>{task.taskName}</h3>; // use 'taskName' instead of 'title'
         })}
       </div>
 

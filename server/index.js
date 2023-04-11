@@ -1,15 +1,17 @@
 const express = require('express')
+const cors = require('cors')
 const mongoose = require('mongoose')
 const User = require("./models/user")
 const Task = require("./models/task")
 const app = express()
-const port = 3000
+const port = 5173 
 app.use(express.json());
+app.use(cors());
 
 
 async function connectToDB() {
     try {
-        await mongoose.connect('mongodb://localhost:27017/mydatabase', {
+        await mongoose.connect('mongodb://localhost:27017/todo_data', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
@@ -18,64 +20,33 @@ async function connectToDB() {
         console.error('Error connecting to database: ', error.message);
     }
 }
-connectToDB()
+connectToDB();
 
-
-app.post('/users', async (req, res) => {
+app.post('/tasks', async (req, res) => {
     try {
-        const { username, password } = req.body
-
-        const newUser = new User({ username, password })
-        await newUser.save();
-        res.status(201).json(newUser);
+        const { taskName } = req.body;
+        const task = new Task({ taskName })
+        await task.save();
+        res.status(200).json(task)
     }
     catch (err) {
-        console.error(err)
+        res.status(500).json(err);
     }
-})
+});
 
-
-app.post('/users/:userId/tasks', async (req, res) => {
+app.get('/tasks', async (req, res) => {
     try {
-        const { userId } = req.params;
-        const { taskName } = req.body;
-
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        const task = await Task.find();
+        if (task.length === 0) {
+            return res.status(404).json("data not found")
         }
-
-        const task = new Task({ taskName, userId: user._id });
-        await task.save();
-
-        user.tasks.push(task);
-        await user.save();
-
-        res.status(201).json(task);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+        // const taskName = task.map(task => task.taskName)
+        res.status(200).json(task)
     }
-})
-
-app.get('/users/:userId/tasks', async (req, res) => {
-    try {
-      const userId = req.params.userId;
-  
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json("User not found.");
-      }
-  
-      const tasks = await Task.find({  userId });
-      
-      res.status(200).json(tasks);
-    } catch (err) {
-      res.status(400).json(err);
+    catch (err) {
+        res.status(500).json(err)
     }
-  });
-  
-
+});
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
